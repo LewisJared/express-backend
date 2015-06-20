@@ -5,3 +5,4 @@ public
 .idea
 /server/config/local.env.js
 mocha.json
+build

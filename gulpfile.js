@@ -66,8 +66,13 @@ gulp.task('jshint', function() {
   .pipe(jshint.reporter('default'))
 })
 
-gulp.task('express', ['jshint', 'test'], function() {
-  gulp.run('setEnvDev');
+gulp.task('express', ['setEnvDev', 'jshint', 'test'], function() {
+  server.run([config.entry]);
+
+  gulp.watch([config.src, config.entry], server.run)
+});
+
+gulp.task('expressProd', ['setEnvProd', 'jshint', 'test'], function() {
   server.run([config.entry]);
 
   gulp.watch([config.src, config.entry], server.run)
