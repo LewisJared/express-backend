@@ -6,10 +6,13 @@
  */
 'use strict';
 
+var CI = process.env.CI === 'true';
+
 var gulp = require('gulp'),
   del = require('del'),
+  env = require('gulp-env'),
   jshint = require('gulp-jshint'),
-  mocha = require('gulp-mocha'),
+  mocha = require('gulp-spawn-mocha'),
   server = require('gulp-express'),
   q = require('q');
 
@@ -19,10 +22,35 @@ var config = {
   entry: 'server/app.js'
 }
 
+gulp.task('setEnvTest', function () {
+  env({
+    vars: {
+      NODE_ENV: 'test'
+    }
+  });
+});
+
+gulp.task('setEnvDev', function () {
+  env({
+    vars: {
+      NODE_ENV: 'development'
+    }
+  });
+});
+
+gulp.task('setEnvProd', function () {
+  env({
+    vars: {
+      NODE_ENV: 'production'
+    }
+  });
+});
+
 gulp.task('test', function() {
   gulp.src('server/**/*.spec.js')
   .pipe(mocha({
-    reporter: 'mocha-bamboo-reporter'
+    env: {'NODE_ENV': 'test'},
+    R: CI ? 'mocha-bamboo-reporter' : 'spec'
   }))
 });
 
@@ -39,6 +67,7 @@ gulp.task('jshint', function() {
 })
 
 gulp.task('express', ['jshint', 'test'], function() {
+  gulp.run('setEnvDev');
   server.run([config.entry]);
 
   gulp.watch([config.src, config.entry], server.run)

@@ -4,3 +4,4 @@ public
 .sass-cache
 .idea
 /server/config/local.env.js
+mocha.json
